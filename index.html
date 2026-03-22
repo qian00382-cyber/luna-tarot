@@ -1,0 +1,2489 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Luna — Mystic Tarot</title>
+    <meta name="description" content="Ask a question, draw a card, and get a personalized AI reading from Luna." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-deep: #06040f;
+        --bg-mid: #0d0820;
+        --bg-card: rgba(255,255,255,0.04);
+        --bg-card-hover: rgba(255,255,255,0.07);
+        --stroke: rgba(212,175,105,0.25);
+        --stroke-bright: rgba(212,175,105,0.5);
+        --text: rgba(255,248,235,0.95);
+        --muted: rgba(255,248,235,0.65);
+        --muted2: rgba(255,248,235,0.4);
+        --gold: #d4af69;
+        --gold2: #f0d090;
+        --purple: #7c5cbf;
+        --purple-light: #a882e8;
+        --rose: #c8607a;
+        --teal: #4ab8c4;
+        --shadow: 0 24px 80px rgba(0,0,0,0.7);
+        --shadow-gold: 0 0 30px rgba(212,175,105,0.15);
+        --radius: 16px;
+        --radius-lg: 22px;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      html, body {
+        min-height: 100%;
+        font-family: 'Crimson Text', Georgia, serif;
+        color: var(--text);
+        background: var(--bg-deep);
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(ellipse 900px 600px at 15% 0%, rgba(124,92,191,0.35) 0%, transparent 60%),
+          radial-gradient(ellipse 700px 500px at 85% 10%, rgba(74,184,196,0.2) 0%, transparent 55%),
+          radial-gradient(ellipse 600px 400px at 50% 100%, rgba(200,96,122,0.15) 0%, transparent 55%),
+          radial-gradient(ellipse 1200px 800px at 50% 50%, rgba(13,8,32,0.8) 0%, transparent 100%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* Stars */
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.8), transparent),
+          radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.6), transparent),
+          radial-gradient(1.5px 1.5px at 40% 8%, rgba(255,255,255,0.9), transparent),
+          radial-gradient(1px 1px at 60% 25%, rgba(255,255,255,0.5), transparent),
+          radial-gradient(1px 1px at 75% 12%, rgba(255,255,255,0.7), transparent),
+          radial-gradient(1.5px 1.5px at 88% 40%, rgba(255,255,255,0.8), transparent),
+          radial-gradient(1px 1px at 5% 60%, rgba(255,255,255,0.4), transparent),
+          radial-gradient(1px 1px at 20% 75%, rgba(255,255,255,0.6), transparent),
+          radial-gradient(1px 1px at 35% 90%, rgba(255,255,255,0.5), transparent),
+          radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.7), transparent),
+          radial-gradient(1.5px 1.5px at 70% 85%, rgba(255,255,255,0.9), transparent),
+          radial-gradient(1px 1px at 90% 65%, rgba(255,255,255,0.6), transparent),
+          radial-gradient(1px 1px at 48% 45%, rgba(212,175,105,0.6), transparent),
+          radial-gradient(1px 1px at 82% 20%, rgba(212,175,105,0.5), transparent);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .wrap {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: grid;
+        place-items: start center;
+        padding: 32px 16px 48px;
+      }
+
+      .panel {
+        width: min(900px, 100%);
+        background: linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow), var(--shadow-gold), inset 0 1px 0 rgba(212,175,105,0.15);
+        backdrop-filter: blur(20px);
+        overflow: hidden;
+      }
+
+      /* Header */
+      header {
+        padding: 28px 28px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(212,175,105,0.12);
+        background: linear-gradient(180deg, rgba(124,92,191,0.08) 0%, transparent 100%);
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .luna-sigil {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7c5cbf, #4ab8c4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: 0 0 20px rgba(124,92,191,0.4);
+        flex-shrink: 0;
+      }
+
+      h1 {
+        font-family: 'Cinzel', serif;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: var(--gold2);
+        text-shadow: 0 0 20px rgba(212,175,105,0.3);
+      }
+
+      .sub {
+        font-size: 13px;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 2px;
+        letter-spacing: 0.3px;
+      }
+
+      .badge {
+        font-family: 'Cinzel', serif;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        color: var(--gold);
+        border: 1px solid rgba(212,175,105,0.3);
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(212,175,105,0.06);
+        white-space: nowrap;
+        text-transform: uppercase;
+      }
+
+      /* ── Onboarding ── */
+      .onboarding-overlay {
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(ellipse 900px 600px at 15% 0%, rgba(124,92,191,0.4) 0%, transparent 60%),
+          radial-gradient(ellipse 700px 500px at 85% 10%, rgba(74,184,196,0.25) 0%, transparent 55%),
+          var(--bg-deep);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 24px 16px;
+        transition: opacity 0.5s ease;
+      }
+
+      .onboarding-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .onboarding-panel {
+        width: min(440px, 100%);
+        background: linear-gradient(160deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius-lg);
+        padding: 36px 32px;
+        box-shadow: var(--shadow), 0 0 60px rgba(124,92,191,0.2);
+        backdrop-filter: blur(20px);
+      }
+
+      .ob-progress {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 32px;
+      }
+
+      .ob-progress-dot {
+        height: 2px;
+        flex: 1;
+        border-radius: 99px;
+        background: rgba(255,255,255,0.1);
+        transition: background 0.4s;
+      }
+
+      .ob-progress-dot.active { background: var(--gold); }
+      .ob-progress-dot.done { background: rgba(212,175,105,0.4); }
+
+      .ob-step { display: none; }
+      .ob-step.active { display: block; animation: fadeUp 0.4s ease; }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .ob-icon { font-size: 40px; margin-bottom: 14px; }
+
+      .ob-title {
+        font-family: 'Cinzel', serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--gold2);
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+      }
+
+      .ob-sub {
+        font-size: 15px;
+        color: var(--muted);
+        margin-bottom: 24px;
+        line-height: 1.6;
+        font-style: italic;
+      }
+
+      .ob-options { display: grid; gap: 8px; margin-bottom: 24px; }
+
+      .ob-option {
+        appearance: none;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(212,175,105,0.2);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 15px;
+        font-family: 'Crimson Text', serif;
+        padding: 12px 16px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 200ms;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .ob-option:hover {
+        border-color: rgba(212,175,105,0.5);
+        background: rgba(212,175,105,0.08);
+      }
+
+      .ob-option.selected {
+        border-color: var(--gold);
+        background: rgba(212,175,105,0.12);
+        color: var(--gold2);
+      }
+
+      .ob-zodiac-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 7px;
+        margin-bottom: 24px;
+      }
+
+      .ob-zodiac-btn {
+        appearance: none;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(212,175,105,0.15);
+        border-radius: 10px;
+        color: var(--muted);
+        font-size: 11px;
+        font-family: 'Crimson Text', serif;
+        padding: 10px 4px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 200ms;
+        line-height: 1.5;
+      }
+
+      .ob-zodiac-btn:hover {
+        border-color: rgba(212,175,105,0.4);
+        color: var(--text);
+      }
+
+      .ob-zodiac-btn.selected {
+        border-color: var(--gold);
+        background: rgba(212,175,105,0.12);
+        color: var(--gold2);
+      }
+
+      .ob-name-input {
+        width: 100%;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(212,175,105,0.25);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 16px;
+        font-family: 'Crimson Text', serif;
+        padding: 12px 16px;
+        outline: none;
+        margin-bottom: 24px;
+        transition: border-color 200ms;
+      }
+
+      .ob-name-input::placeholder { color: var(--muted2); }
+      .ob-name-input:focus { border-color: var(--gold); }
+
+      .ob-next-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        font-family: 'Cinzel', serif;
+        letter-spacing: 1px;
+        border-radius: 12px;
+        border: 1px solid rgba(212,175,105,0.4);
+        background: linear-gradient(135deg, rgba(124,92,191,0.4), rgba(74,184,196,0.25));
+        color: var(--gold2);
+        cursor: pointer;
+        transition: all 200ms;
+      }
+
+      .ob-next-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,175,105,0.15); }
+      .ob-next-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+      .ob-skip {
+        text-align: center;
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--muted2);
+        cursor: pointer;
+        font-style: italic;
+      }
+
+      .ob-skip:hover { color: var(--muted); }
+
+      /* History */
+      .history-toggle {
+        padding: 14px 24px;
+        font-family: 'Cinzel', serif;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--gold);
+        cursor: pointer;
+        text-align: center;
+        border-top: 1px solid var(--stroke);
+        transition: opacity 150ms;
+        opacity: 0.7;
+      }
+
+      .history-toggle:hover { opacity: 1; }
+
+      .history-panel {
+        padding: 0 24px 24px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .history-title {
+        font-family: 'Cinzel', serif;
+        font-size: 10px;
+        color: var(--gold);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        opacity: 0.7;
+      }
+
+      .history-clear {
+        font-size: 12px;
+        color: var(--muted2);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-family: 'Crimson Text', serif;
+        font-style: italic;
+      }
+
+      .history-clear:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+      .history-list { display: grid; gap: 8px; }
+
+      .history-empty {
+        font-size: 14px;
+        color: var(--muted2);
+        text-align: center;
+        padding: 16px 0;
+        font-style: italic;
+      }
+
+      .history-item {
+        border-radius: 12px;
+        border: 1px solid var(--stroke);
+        background: rgba(255,255,255,0.03);
+        padding: 12px 16px;
+        display: grid;
+        gap: 4px;
+        cursor: pointer;
+        transition: all 150ms;
+      }
+
+      .history-item:hover { background: rgba(212,175,105,0.05); border-color: rgba(212,175,105,0.2); }
+
+      .history-item-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+      }
+
+      .history-item-card {
+        font-family: 'Cinzel', serif;
+        font-size: 12px;
+        color: var(--gold2);
+        letter-spacing: 0.3px;
+      }
+
+      .history-item-date {
+        font-size: 11px;
+        color: var(--muted2);
+        white-space: nowrap;
+        font-style: italic;
+      }
+
+      .history-item-question {
+        font-size: 13px;
+        color: var(--muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-style: italic;
+      }
+
+      .history-item-reading {
+        font-size: 13px;
+        color: var(--muted2);
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+
+      .wrap {
+        min-height: 100vh;
+        display: grid;
+        place-items: start center;
+        padding: 32px 16px 48px;
+      }
+
+      .panel {
+        width: min(900px, 100%);
+        background: linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow), var(--shadow-gold), inset 0 1px 0 rgba(212,175,105,0.15);
+        backdrop-filter: blur(20px);
+        overflow: hidden;
+      }
+
+      main { padding: 0 24px 24px; display: grid; gap: 16px; }
+
+      /* Question input */
+      /* Zodiac & Daily Card */
+      .zodiac-bar {
+        padding: 16px 24px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .zodiac-label {
+        font-size: 12px;
+        color: var(--gold);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: 'Cinzel', serif;
+        white-space: nowrap;
+      }
+
+      .zodiac-select {
+        background: rgba(212,175,105,0.06);
+        border: 1px solid rgba(212,175,105,0.25);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 14px;
+        font-family: 'Crimson Text', serif;
+        padding: 6px 12px;
+        outline: none;
+        cursor: pointer;
+      }
+
+      .zodiac-select:focus { border-color: var(--gold); }
+      .zodiac-select option { background: #1a1030; }
+
+      .daily-card-box {
+        margin: 0;
+        border-radius: var(--radius);
+        border: 1px solid rgba(212,175,105,0.2);
+        background: linear-gradient(135deg, rgba(124,92,191,0.1), rgba(74,184,196,0.06));
+        padding: 18px 20px;
+        display: grid;
+        gap: 10px;
+        box-shadow: inset 0 1px 0 rgba(212,175,105,0.1);
+      }
+
+      .daily-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .daily-card-title {
+        font-family: 'Cinzel', serif;
+        font-size: 11px;
+        color: var(--gold);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+
+      .daily-date {
+        font-size: 12px;
+        color: var(--muted2);
+        font-style: italic;
+      }
+
+      .daily-card-content {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+
+      .daily-card-name {
+        font-family: 'Cinzel', serif;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--gold2);
+        margin-bottom: 4px;
+      }
+
+      .daily-card-tag {
+        font-size: 13px;
+        color: var(--purple-light);
+        margin-bottom: 8px;
+        font-style: italic;
+      }
+
+      .daily-card-message {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .daily-zodiac-note {
+        font-size: 12px;
+        color: var(--gold);
+        font-style: italic;
+        margin-top: 4px;
+        opacity: 0.7;
+      }
+
+      .question-box {
+        border-radius: var(--radius);
+        border: 1px solid var(--stroke);
+        background: rgba(255,255,255,0.03);
+        padding: 16px 18px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .question-label {
+        font-family: 'Cinzel', serif;
+        font-size: 10px;
+        color: var(--gold);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+
+      textarea {
+        width: 100%;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 15px;
+        font-family: 'Crimson Text', serif;
+        padding: 12px 14px;
+        resize: none;
+        outline: none;
+        line-height: 1.7;
+        transition: border-color 200ms;
+      }
+
+      textarea::placeholder { color: var(--muted2); font-style: italic; }
+      textarea:focus { border-color: rgba(212,175,105,0.5); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 16px;
+        align-items: stretch;
+      }
+
+      @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+
+      .card {
+        border-radius: var(--radius);
+        border: 1px solid var(--stroke);
+        background:
+          radial-gradient(120px 120px at 30% 20%, rgba(124,92,191,0.25), transparent 60%),
+          radial-gradient(100px 100px at 80% 75%, rgba(74,184,196,0.15), transparent 60%),
+          rgba(255,255,255,0.03);
+        padding: 18px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(212,175,105,0.03) 0%, transparent 60%);
+        pointer-events: none;
+      }
+
+      .cardInner {
+        position: relative;
+        display: grid;
+        gap: 12px;
+        min-height: 220px;
+      }
+
+      .cardTop {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .label {
+        font-family: 'Cinzel', serif;
+        font-size: 10px;
+        color: var(--gold);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        opacity: 0.7;
+      }
+
+      .pip {
+        width: 8px; height: 8px;
+        border-radius: 999px;
+        background: var(--gold);
+        box-shadow: 0 0 8px rgba(212,175,105,0.5);
+      }
+
+      .big {
+        font-family: 'Cinzel', serif;
+        font-size: 18px;
+        line-height: 1.3;
+        color: var(--gold2);
+      }
+
+      .hint { font-size: 14px; color: var(--muted); line-height: 1.7; font-style: italic; }
+      .divider { height: 1px; background: var(--stroke); margin: 4px 0; }
+      .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+      button {
+        appearance: none;
+        border: 1px solid var(--stroke);
+        background: rgba(255,255,255,0.05);
+        color: var(--text);
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        font-family: 'Crimson Text', serif;
+        cursor: pointer;
+        transition: all 180ms ease;
+        letter-spacing: 0.3px;
+      }
+
+      button.primary {
+        border-color: rgba(212,175,105,0.4);
+        background: linear-gradient(135deg, rgba(124,92,191,0.3), rgba(74,184,196,0.2));
+        color: var(--gold2);
+        font-family: 'Cinzel', serif;
+        font-size: 13px;
+        letter-spacing: 1px;
+      }
+
+      button:hover { transform: translateY(-1px); border-color: var(--stroke-bright); box-shadow: 0 4px 16px rgba(212,175,105,0.1); }
+      button:active { transform: scale(0.99); }
+      button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+      .result {
+        border-radius: var(--radius);
+        border: 1px solid var(--stroke);
+        background: rgba(255,255,255,0.03);
+        padding: 20px;
+        display: grid;
+        gap: 12px;
+        box-shadow: inset 0 1px 0 rgba(212,175,105,0.08);
+      }
+
+      .row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .name {
+        font-family: 'Cinzel', serif;
+        font-size: 17px;
+        color: var(--gold2);
+        letter-spacing: 0.5px;
+      }
+
+      .tag {
+        font-size: 12px;
+        color: var(--purple-light);
+        border: 1px solid rgba(124,92,191,0.3);
+        padding: 5px 10px;
+        border-radius: 999px;
+        background: rgba(124,92,191,0.1);
+        font-style: italic;
+      }
+
+      .meaning { color: var(--muted); line-height: 1.9; font-size: 15px; }
+
+      /* AI Reading section */
+      .ai-section {
+        border-top: 1px solid var(--stroke);
+        padding-top: 14px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .ai-label {
+        font-family: 'Cinzel', serif;
+        font-size: 10px;
+        color: var(--gold);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .ai-label::before {
+        content: "✦";
+        font-size: 10px;
+      }
+
+      .luna-reader {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 2px;
+      }
+
+      .luna-reader-avatar {
+        width: 28px; height: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7c5cbf, #4ab8c4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        box-shadow: 0 0 10px rgba(124,92,191,0.3);
+        flex-shrink: 0;
+      }
+
+      .luna-reader-name {
+        font-family: 'Cinzel', serif;
+        font-size: 11px;
+        color: var(--gold);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        opacity: 0.9;
+      }
+
+      .ai-text {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.9;
+        font-size: 14px;
+        white-space: pre-wrap;
+      }
+
+      .loading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted2);
+        font-size: 13px;
+      }
+
+      .spinner {
+        width: 14px; height: 14px;
+        border: 2px solid rgba(212,175,105,0.2);
+        border-top-color: var(--gold);
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+      }
+
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .footer {
+        padding: 16px 24px 20px;
+        color: var(--muted2);
+        font-size: 13px;
+        line-height: 1.6;
+        text-align: center;
+        font-style: italic;
+        border-top: 1px solid var(--stroke);
+      }
+
+      /* Tarot card tap-to-flip interaction */
+      .tarot-card-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        min-height: 160px;
+      }
+
+      .tarot-card {
+        width: 120px;
+        height: 180px;
+        perspective: 1000px;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: transform 200ms ease;
+      }
+
+      .tarot-card.disabled { pointer-events: none; cursor: default; }
+
+      .tarot-card-inner {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.7s cubic-bezier(.4, 0, .2, 1);
+        will-change: transform;
+      }
+
+      .tarot-card.flipped .tarot-card-inner {
+        transform: rotateY(180deg);
+      }
+
+      .tarot-card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .tarot-card-back {
+        background:
+          radial-gradient(ellipse at 50% 25%, rgba(124,92,191,0.5), transparent 55%),
+          radial-gradient(ellipse at 50% 75%, rgba(200,96,122,0.3), transparent 55%),
+          linear-gradient(180deg, #1a0e35, #0d0820);
+        border: 1px solid rgba(212,175,105,0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 20px rgba(212,175,105,0.1);
+      }
+
+      .card-back-design {
+        width: 80%;
+        height: 80%;
+        border: 1px solid rgba(212,175,105,0.3);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle, rgba(212,175,105,0.08), transparent 70%);
+        position: relative;
+      }
+
+      .card-back-design::before {
+        content: "✦";
+        position: absolute;
+        top: 6px; left: 6px;
+        font-size: 8px;
+        color: rgba(212,175,105,0.4);
+      }
+
+      .card-back-design::after {
+        content: "✦";
+        position: absolute;
+        bottom: 6px; right: 6px;
+        font-size: 8px;
+        color: rgba(212,175,105,0.4);
+      }
+
+      .card-back-symbol {
+        font-size: 34px;
+        color: rgba(212,175,105,0.8);
+        text-shadow: 0 0 20px rgba(212,175,105,0.4);
+      }
+
+      .tarot-card-front {
+        transform: rotateY(180deg);
+        background:
+          radial-gradient(ellipse at 50% 20%, rgba(124,92,191,0.3), transparent 55%),
+          radial-gradient(ellipse at 50% 80%, rgba(74,184,196,0.2), transparent 55%),
+          linear-gradient(180deg, #1a0e35, #0d0820);
+        border: 1px solid rgba(212,175,105,0.35);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 14px;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 15px rgba(212,175,105,0.1);
+      }
+
+      .card-front-name {
+        font-family: 'Cinzel', serif;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: var(--gold2);
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+      }
+
+      .card-front-tag {
+        font-size: 11px;
+        color: var(--purple-light);
+        font-style: italic;
+        letter-spacing: 0.3px;
+      }
+
+      .tarot-card.tappable {
+        animation: cardPulse 2.5s ease-in-out infinite;
+      }
+
+      @keyframes cardPulse {
+        0%, 100% { filter: drop-shadow(0 0 8px rgba(212,175,105,0.2)); }
+        50% { filter: drop-shadow(0 0 22px rgba(212,175,105,0.5)); }
+      }
+
+      .tarot-card.shuffling .tarot-card-inner {
+        animation: shuffleCards 1.4s ease-in-out;
+      }
+
+      @keyframes shuffleCards {
+        0% { transform: translateX(0) rotateZ(0deg); }
+        8% { transform: translateX(-28px) rotateZ(-10deg); }
+        18% { transform: translateX(26px) rotateZ(9deg); }
+        28% { transform: translateX(-22px) rotateZ(-7deg); }
+        38% { transform: translateX(18px) rotateZ(6deg); }
+        48% { transform: translateX(-12px) rotateZ(-4deg); }
+        58% { transform: translateX(10px) rotateZ(3deg); }
+        68% { transform: translateX(-6px) rotateZ(-1.5deg); }
+        78% { transform: translateX(4px) rotateZ(1deg); }
+        88% { transform: translateX(-2px) rotateZ(0deg); }
+        100% { transform: translateX(0) rotateZ(0deg); }
+      }
+
+      .tarot-card.tappable:hover {
+        transform: translateY(-4px);
+      }
+
+      .tarot-card.tappable:active {
+        transform: scale(0.96);
+      }
+
+      .flip { animation: flipIn 520ms cubic-bezier(.2,.8,.2,1); }
+
+      @keyframes flipIn {
+        0% { transform: perspective(900px) rotateY(-18deg) translateY(6px); opacity: 0; }
+        60% { transform: perspective(900px) rotateY(8deg); opacity: 1; }
+        100% { transform: perspective(900px) rotateY(0deg); opacity: 1; }
+      }
+
+      .shake { animation: shake 420ms ease-in-out; }
+
+      @keyframes shake {
+        0%,100% { transform: translateX(0); }
+        20% { transform: translateX(-6px); }
+        40% { transform: translateX(6px); }
+        60% { transform: translateX(-3px); }
+        80% { transform: translateX(3px); }
+      }
+
+      /* Conversation / Follow-up styles */
+      .conversation {
+        border-top: 1px solid var(--stroke);
+        padding-top: 14px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .convo-label {
+        font-family: 'Cinzel', serif;
+        font-size: 10px;
+        color: var(--gold);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        opacity: 0.8;
+      }
+
+      .convo-label::before { content: "☽"; font-size: 11px; color: var(--gold); }
+
+      .convo-messages {
+        display: grid;
+        gap: 10px;
+        max-height: 320px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+
+      .convo-messages::-webkit-scrollbar { width: 4px; }
+      .convo-messages::-webkit-scrollbar-track { background: transparent; }
+      .convo-messages::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.15);
+        border-radius: 4px;
+      }
+
+      .convo-bubble {
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-size: 14px;
+        line-height: 1.7;
+        max-width: 88%;
+        animation: fadeSlide 300ms ease;
+      }
+
+      @keyframes fadeSlide {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .convo-bubble.user {
+        justify-self: end;
+        background: rgba(124,92,191,0.15);
+        border: 1px solid rgba(124,92,191,0.25);
+        color: var(--text);
+      }
+
+      .convo-bubble.luna {
+        justify-self: start;
+        background: rgba(212,175,105,0.07);
+        border: 1px solid rgba(212,175,105,0.18);
+        color: var(--muted);
+      }
+
+      .convo-bubble.luna .luna-name {
+        font-family: 'Cinzel', serif;
+        font-size: 10px;
+        color: var(--gold);
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+        opacity: 0.8;
+      }
+
+      .followup-input-wrap {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .followup-input-wrap input {
+        flex: 1;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 14px;
+        font-family: 'Crimson Text', serif;
+        padding: 10px 14px;
+        outline: none;
+        transition: border-color 200ms;
+      }
+
+      .followup-input-wrap input::placeholder { color: var(--muted2); font-style: italic; }
+      .followup-input-wrap input:focus { border-color: rgba(212,175,105,0.5); }
+
+      .followup-input-wrap button {
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-family: 'Cinzel', serif;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        border-color: rgba(212,175,105,0.35);
+        background: linear-gradient(135deg, rgba(124,92,191,0.25), rgba(212,175,105,0.1));
+        color: var(--gold2);
+      }
+
+      /* Spread chooser */
+      .spread-chooser {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .spread-btn {
+        flex: 1;
+        max-width: 220px;
+        padding: 11px 16px;
+        border-radius: 12px;
+        font-family: 'Cinzel', serif;
+        font-size: 11px;
+        letter-spacing: 1px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 200ms ease;
+        border: 1px solid var(--stroke);
+        background: rgba(255,255,255,0.03);
+        color: var(--muted);
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .spread-btn.active {
+        border-color: rgba(212,175,105,0.4);
+        background: linear-gradient(135deg, rgba(124,92,191,0.2), rgba(74,184,196,0.12));
+        color: var(--gold2);
+        box-shadow: 0 0 20px rgba(212,175,105,0.1);
+      }
+
+      .spread-btn:hover:not(.active) {
+        border-color: var(--stroke-bright);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+      }
+
+      /* Three card spread */
+      .three-card-area {
+        display: none;
+      }
+
+      .three-card-area.visible {
+        display: grid;
+        gap: 14px;
+      }
+
+      .three-card-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 24px 18px;
+        border-radius: var(--radius);
+        border: 1px solid rgba(255,255,255,0.14);
+        background:
+          radial-gradient(120px 120px at 20% 25%, rgba(167,139,250,0.2), transparent 60%),
+          radial-gradient(140px 140px at 80% 70%, rgba(34,211,238,0.16), transparent 62%),
+          linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+      }
+
+      .three-card-slot {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .position-label {
+        font-size: 11px;
+        color: var(--accent);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+
+      .three-card-slot .tarot-card {
+        width: 100px;
+        height: 150px;
+      }
+
+      .three-card-slot .card-front-name {
+        font-size: 12px;
+      }
+
+      .three-card-slot .card-front-tag {
+        font-size: 10px;
+      }
+
+      .three-card-status {
+        text-align: center;
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .three-card-actions {
+        display: flex;
+        justify-content: center;
+      }
+
+      /* Three card result items */
+      .three-card-result-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .three-card-result-item {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .position-tag {
+        font-size: 11px;
+        color: var(--accent2);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        min-width: 56px;
+      }
+
+      .three-card-result-item .name {
+        font-size: 15px;
+        margin: 0;
+      }
+
+      .three-card-result-item .tag {
+        font-size: 11px;
+      }
+
+      @media (max-width: 700px) {
+        .three-card-container {
+          gap: 10px;
+          padding: 16px 10px;
+        }
+        .three-card-slot .tarot-card {
+          width: 85px;
+          height: 128px;
+        }
+        .three-card-slot .card-front-name {
+          font-size: 11px;
+        }
+        .three-card-slot .card-front-tag {
+          font-size: 9px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Onboarding Overlay -->
+    <div class="onboarding-overlay" id="onboardingOverlay">
+      <div class="onboarding-panel">
+        <div class="ob-progress">
+          <div class="ob-progress-dot active" id="obDot0"></div>
+          <div class="ob-progress-dot" id="obDot1"></div>
+          <div class="ob-progress-dot" id="obDot2"></div>
+          <div class="ob-progress-dot" id="obDot3"></div>
+        </div>
+        <div class="ob-step active" id="obStep0">
+          <div class="ob-icon">🔮</div>
+          <h2 class="ob-title">Welcome to Luna</h2>
+          <p class="ob-sub">What brings you here today?</p>
+          <div class="ob-options">
+            <button class="ob-option" data-value="learn">📚 I want to learn about tarot</button>
+            <button class="ob-option" data-value="answers">🌟 I'm looking for answers</button>
+            <button class="ob-option" data-value="intuition">🌙 Develop my intuition</button>
+            <button class="ob-option" data-value="guidance">✨ I need spiritual guidance</button>
+            <button class="ob-option" data-value="fun">🎴 Just for fun</button>
+          </div>
+          <button class="ob-next-btn" id="obNext0" disabled>Continue →</button>
+        </div>
+        <div class="ob-step" id="obStep1">
+          <div class="ob-icon">💭</div>
+          <h2 class="ob-title">What's on your mind?</h2>
+          <p class="ob-sub">Luna will personalize your readings based on your focus.</p>
+          <div class="ob-options">
+            <button class="ob-option" data-value="love">❤️ Love &amp; Relationships</button>
+            <button class="ob-option" data-value="career">💼 Career &amp; Money</button>
+            <button class="ob-option" data-value="life">🌿 Life Direction</button>
+            <button class="ob-option" data-value="growth">🌱 Personal Growth</button>
+          </div>
+          <button class="ob-next-btn" id="obNext1" disabled>Continue →</button>
+        </div>
+        <div class="ob-step" id="obStep2">
+          <div class="ob-icon">⭐</div>
+          <h2 class="ob-title">What's your sign?</h2>
+          <p class="ob-sub">Luna uses your zodiac to personalize your daily card.</p>
+          <div class="ob-zodiac-grid">
+            <button class="ob-zodiac-btn" data-value="Aries">♈<br>Aries</button>
+            <button class="ob-zodiac-btn" data-value="Taurus">♉<br>Taurus</button>
+            <button class="ob-zodiac-btn" data-value="Gemini">♊<br>Gemini</button>
+            <button class="ob-zodiac-btn" data-value="Cancer">♋<br>Cancer</button>
+            <button class="ob-zodiac-btn" data-value="Leo">♌<br>Leo</button>
+            <button class="ob-zodiac-btn" data-value="Virgo">♍<br>Virgo</button>
+            <button class="ob-zodiac-btn" data-value="Libra">♎<br>Libra</button>
+            <button class="ob-zodiac-btn" data-value="Scorpio">♏<br>Scorpio</button>
+            <button class="ob-zodiac-btn" data-value="Sagittarius">♐<br>Sagittarius</button>
+            <button class="ob-zodiac-btn" data-value="Capricorn">♑<br>Capricorn</button>
+            <button class="ob-zodiac-btn" data-value="Aquarius">♒<br>Aquarius</button>
+            <button class="ob-zodiac-btn" data-value="Pisces">♓<br>Pisces</button>
+          </div>
+          <button class="ob-next-btn" id="obNext2" disabled>Continue →</button>
+          <div class="ob-skip" id="obSkip2">Skip for now</div>
+        </div>
+        <div class="ob-step" id="obStep3">
+          <div class="ob-icon">🌙</div>
+          <h2 class="ob-title">What shall Luna call you?</h2>
+          <p class="ob-sub">Optional — makes your readings feel more personal.</p>
+          <input class="ob-name-input" id="obNameInput" type="text" placeholder="Your name (optional)" maxlength="30" />
+          <button class="ob-next-btn" id="obNext3">Begin My Reading ✨</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="panel">
+        <header>
+          <div class="header-left">
+            <div class="luna-sigil">🌙</div>
+            <div>
+              <h1>Luna</h1>
+              <p class="sub">Ancient wisdom meets modern intuition</p>
+            </div>
+          </div>
+          <div class="badge">Mystic Tarot</div>
+        </header>
+
+        <main>
+
+          <!-- Zodiac Selector -->
+          <div class="zodiac-bar">
+            <span class="zodiac-label">✦ Your Sign</span>
+            <select class="zodiac-select" id="zodiacSelect">
+              <option value="">Select your zodiac</option>
+              <option value="Aries">♈ Aries</option>
+              <option value="Taurus">♉ Taurus</option>
+              <option value="Gemini">♊ Gemini</option>
+              <option value="Cancer">♋ Cancer</option>
+              <option value="Leo">♌ Leo</option>
+              <option value="Virgo">♍ Virgo</option>
+              <option value="Libra">♎ Libra</option>
+              <option value="Scorpio">♏ Scorpio</option>
+              <option value="Sagittarius">♐ Sagittarius</option>
+              <option value="Capricorn">♑ Capricorn</option>
+              <option value="Aquarius">♒ Aquarius</option>
+              <option value="Pisces">♓ Pisces</option>
+            </select>
+          </div>
+
+          <!-- Daily Card -->
+          <div class="daily-card-box" id="dailyCardBox" style="display:none">
+            <div class="daily-card-header">
+              <div class="daily-card-title">🌙 Today's Card</div>
+              <div class="daily-date" id="dailyDate"></div>
+            </div>
+            <div class="daily-card-content">
+              <div>
+                <p class="daily-card-name" id="dailyCardName"></p>
+                <p class="daily-card-tag" id="dailyCardTag"></p>
+                <p class="daily-card-message" id="dailyCardMessage">Luna is reading today's energy...</p>
+                <p class="daily-zodiac-note" id="dailyZodiacNote"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question Input -->
+          <div class="question-box">
+            <div class="question-label">Your Question</div>
+            <textarea id="questionInput" rows="2"
+              placeholder="e.g. Should I take this new opportunity? What does my love life hold?"></textarea>
+          </div>
+
+          <!-- Spread Chooser -->
+          <div class="spread-chooser">
+            <button class="spread-btn active" id="singleSpreadBtn" type="button">Single Card</button>
+            <button class="spread-btn" id="threeSpreadBtn" type="button">Past · Present · Future</button>
+          </div>
+
+          <!-- Single Card + Result -->
+          <section class="grid" id="singleCardGrid">
+            <div class="card">
+              <div class="cardInner" id="leftCard">
+                <div class="cardTop">
+                  <div class="label">Draw</div>
+                  <div class="pip"></div>
+                </div>
+                <div class="tarot-card-wrap">
+                  <div class="tarot-card tappable" id="tarotCard">
+                    <div class="tarot-card-inner" id="tarotCardInner">
+                      <div class="tarot-card-face tarot-card-back">
+                        <div class="card-back-design">
+                          <span class="card-back-symbol">&#10022;</span>
+                        </div>
+                      </div>
+                      <div class="tarot-card-face tarot-card-front" style="padding:0;overflow:hidden;">
+                        <img id="cardFrontImg" src="" alt="" style="width:100%;height:75%;object-fit:cover;display:block;" />
+                        <div style="padding:8px 10px;background:rgba(0,0,0,0.5);">
+                          <p class="card-front-name" id="cardFrontName" style="margin:0 0 2px;"></p>
+                          <p class="card-front-tag" id="cardFrontTag" style="margin:0;"></p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p class="hint" id="promptText" style="text-align:center">Tap the card to shuffle the deck</p>
+                <div class="actions" style="justify-content:center">
+                  <button id="resetBtn" type="button" style="display:none">Reset</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="result" aria-live="polite">
+              <div class="row">
+                <p class="name" id="cardName">—</p>
+                <span class="tag" id="cardTag">No card drawn yet</span>
+              </div>
+              <p class="meaning" id="cardMeaning">Tap the card to begin your reading.</p>
+
+              <!-- AI Reading -->
+              <div class="ai-section" id="aiSection" style="display:none">
+                <div class="ai-label">Luna's Reading</div>
+                <div id="aiContent">
+                  <div class="loading" id="loadingEl">
+                    <div class="spinner"></div>
+                    <span>Luna is reading the cards…</span>
+                  </div>
+                  <p class="ai-text" id="aiText" style="display:none"></p>
+                </div>
+              </div>
+
+              <!-- Follow-up Conversation -->
+              <div class="conversation" id="convoSection" style="display:none">
+                <div class="convo-label">Ask Luna a Follow-Up</div>
+                <div class="convo-messages" id="convoMessages"></div>
+                <div class="followup-input-wrap">
+                  <input type="text" id="followupInput"
+                    placeholder="Ask Luna something about your reading…"
+                    autocomplete="off" />
+                  <button type="button" id="followupBtn">Ask</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Three Card Spread -->
+          <div class="three-card-area" id="threeCardArea">
+            <div class="three-card-container" id="threeCardContainer">
+              <div class="three-card-slot">
+                <div class="position-label">Past</div>
+                <div class="tarot-card tappable" id="spreadCard0">
+                  <div class="tarot-card-inner">
+                    <div class="tarot-card-face tarot-card-back">
+                      <div class="card-back-design">
+                        <span class="card-back-symbol">&#10022;</span>
+                      </div>
+                    </div>
+                    <div class="tarot-card-face tarot-card-front" style="padding:0;overflow:hidden;">
+                      <img id="spreadCardImg0" src="" alt="" style="width:100%;height:72%;object-fit:cover;display:block;" />
+                      <div style="padding:6px 8px;background:rgba(0,0,0,0.5);">
+                        <p class="card-front-name" id="spreadCardName0" style="margin:0 0 2px;font-size:11px;"></p>
+                        <p class="card-front-tag" id="spreadCardTag0" style="margin:0;font-size:10px;"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="three-card-slot">
+                <div class="position-label">Present</div>
+                <div class="tarot-card tappable" id="spreadCard1">
+                  <div class="tarot-card-inner">
+                    <div class="tarot-card-face tarot-card-back">
+                      <div class="card-back-design">
+                        <span class="card-back-symbol">&#10022;</span>
+                      </div>
+                    </div>
+                    <div class="tarot-card-face tarot-card-front" style="padding:0;overflow:hidden;">
+                      <img id="spreadCardImg1" src="" alt="" style="width:100%;height:72%;object-fit:cover;display:block;" />
+                      <div style="padding:6px 8px;background:rgba(0,0,0,0.5);">
+                        <p class="card-front-name" id="spreadCardName1" style="margin:0 0 2px;font-size:11px;"></p>
+                        <p class="card-front-tag" id="spreadCardTag1" style="margin:0;font-size:10px;"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="three-card-slot">
+                <div class="position-label">Future</div>
+                <div class="tarot-card tappable" id="spreadCard2">
+                  <div class="tarot-card-inner">
+                    <div class="tarot-card-face tarot-card-back">
+                      <div class="card-back-design">
+                        <span class="card-back-symbol">&#10022;</span>
+                      </div>
+                    </div>
+                    <div class="tarot-card-face tarot-card-front" style="padding:0;overflow:hidden;">
+                      <img id="spreadCardImg2" src="" alt="" style="width:100%;height:72%;object-fit:cover;display:block;" />
+                      <div style="padding:6px 8px;background:rgba(0,0,0,0.5);">
+                        <p class="card-front-name" id="spreadCardName2" style="margin:0 0 2px;font-size:11px;"></p>
+                        <p class="card-front-tag" id="spreadCardTag2" style="margin:0;font-size:10px;"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="three-card-status" id="threeCardStatus">Tap each card to reveal your reading</p>
+            <div class="three-card-actions">
+              <button id="resetBtnThree" type="button" style="display:none">Reset</button>
+            </div>
+
+            <div class="result" id="threeCardResult" style="display:none" aria-live="polite">
+              <div class="three-card-result-cards" id="threeCardResultCards"></div>
+
+              <div class="ai-section" id="aiSectionThree">
+                <div class="ai-label">Luna's Reading</div>
+                <div id="aiContentThree">
+                  <div class="loading" id="loadingElThree">
+                    <div class="spinner"></div>
+                    <span>Luna is reading the cards…</span>
+                  </div>
+                  <p class="ai-text" id="aiTextThree" style="display:none"></p>
+                </div>
+              </div>
+
+              <div class="conversation" id="convoSectionThree" style="display:none">
+                <div class="convo-label">Ask Luna a Follow-Up</div>
+                <div class="convo-messages" id="convoMessagesThree"></div>
+                <div class="followup-input-wrap">
+                  <input type="text" id="followupInputThree"
+                    placeholder="Ask Luna something about your reading…"
+                    autocomplete="off" />
+                  <button type="button" id="followupBtnThree">Ask</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <div class="footer">
+          ✦ For entertainment and self-reflection only. The cards offer perspective, not predictions.
+        </div>
+
+        <!-- History Panel -->
+        <div class="history-toggle" id="historyToggle">🕐 Reading History</div>
+        <div class="history-panel" id="historyPanel" style="display:none">
+          <div class="history-header">
+            <span class="history-title">Past Readings</span>
+            <button class="history-clear" id="historyClear">Clear all</button>
+          </div>
+          <div class="history-list" id="historyList">
+            <p class="history-empty">No readings yet. Draw your first card!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paywall Modal -->
+    <div id="paywallModal" style="display:none; position:fixed; inset:0; z-index:2000; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); align-items:flex-end; justify-content:center;">
+      <div id="paywallSheet" style="width:min(480px,100%); background:linear-gradient(160deg,rgba(26,14,53,0.98),rgba(13,8,32,0.99)); border:1px solid rgba(212,175,105,0.3); border-bottom:none; border-radius:24px 24px 0 0; padding:32px 28px 40px; transform:translateY(100%); transition:transform 0.45s cubic-bezier(.2,.9,.3,1); box-shadow:0 -20px 60px rgba(0,0,0,0.6);">
+        <div style="text-align:center; margin-bottom:24px;">
+          <div style="font-size:36px; margin-bottom:12px;">🌙</div>
+          <h2 style="font-family:'Cinzel',serif; font-size:20px; color:#f0d090; letter-spacing:1.5px; margin:0 0 8px;">Unlock Luna Premium</h2>
+          <p style="font-size:15px; color:rgba(255,248,235,0.6); font-style:italic; margin:0;">Follow-up questions, unlimited readings & more</p>
+        </div>
+
+        <div style="display:grid; gap:10px; margin-bottom:24px;">
+          <div class="pw-plan" data-plan="annual" onclick="selectPlan(this)" style="border:2px solid #d4af69; background:rgba(212,175,105,0.1); border-radius:14px; padding:14px 18px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-family:'Cinzel',serif; font-size:13px; color:#f0d090; letter-spacing:0.5px;">Annual Plan</div>
+              <div style="font-size:12px; color:rgba(255,248,235,0.5); font-style:italic; margin-top:2px;">Best value · Save 50%</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:18px; font-weight:700; color:#f0d090;">$29.99</div>
+              <div style="font-size:11px; color:rgba(255,248,235,0.5);">per year</div>
+            </div>
+          </div>
+          <div class="pw-plan" data-plan="monthly" onclick="selectPlan(this)" style="border:1px solid rgba(212,175,105,0.2); background:rgba(255,255,255,0.03); border-radius:14px; padding:14px 18px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-family:'Cinzel',serif; font-size:13px; color:rgba(255,248,235,0.8); letter-spacing:0.5px;">Monthly Plan</div>
+              <div style="font-size:12px; color:rgba(255,248,235,0.5); font-style:italic; margin-top:2px;">Cancel anytime</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:18px; font-weight:700; color:rgba(255,248,235,0.8);">$4.99</div>
+              <div style="font-size:11px; color:rgba(255,248,235,0.5);">per month</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; gap:10px; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:rgba(255,248,235,0.6);">
+            <span style="color:#d4af69;">✦</span> Unlimited follow-up questions with Luna
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:rgba(255,248,235,0.6);">
+            <span style="color:#d4af69;">✦</span> Unlimited readings every day
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; font-size:13px; color:rgba(255,248,235,0.6);">
+            <span style="color:#d4af69;">✦</span> Reading history saved forever
+          </div>
+        </div>
+
+        <button onclick="handleSubscribe()" style="width:100%; margin-top:20px; padding:16px; font-family:'Cinzel',serif; font-size:14px; letter-spacing:1.5px; font-weight:700; border-radius:14px; border:1px solid rgba(212,175,105,0.5); background:linear-gradient(135deg,rgba(124,92,191,0.5),rgba(212,175,105,0.3)); color:#f0d090; cursor:pointer; transition:all 200ms;">
+          START 3-DAY FREE TRIAL
+        </button>
+        <div style="text-align:center; margin-top:10px; font-size:12px; color:rgba(255,248,235,0.4); font-style:italic;">No charge until trial ends · Cancel anytime</div>
+
+        <div style="display:flex; justify-content:space-between; margin-top:16px;">
+          <span onclick="restorePurchase()" style="font-size:12px; color:rgba(255,248,235,0.4); cursor:pointer; text-decoration:underline;">Restore Purchase</span>
+          <span onclick="closePaywall()" style="font-size:12px; color:rgba(255,248,235,0.4); cursor:pointer; text-decoration:underline;">Maybe Later</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Paywall ─────────────────────────────────────────
+      let isPremium = localStorage.getItem("luna_premium") === "1";
+      let selectedPlanId = "annual";
+
+      function showPaywall() {
+        const modal = document.getElementById("paywallModal");
+        modal.style.display = "flex";
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          document.getElementById("paywallSheet").style.transform = "translateY(0)";
+        }));
+      }
+
+      function closePaywall() {
+        document.getElementById("paywallSheet").style.transform = "translateY(100%)";
+        setTimeout(() => { document.getElementById("paywallModal").style.display = "none"; }, 450);
+      }
+
+      function selectPlan(el) {
+        document.querySelectorAll(".pw-plan").forEach(p => {
+          p.style.border = "1px solid rgba(212,175,105,0.2)";
+          p.style.background = "rgba(255,255,255,0.03)";
+        });
+        el.style.border = "2px solid #d4af69";
+        el.style.background = "rgba(212,175,105,0.1)";
+        selectedPlanId = el.dataset.plan;
+      }
+
+      function handleSubscribe() {
+        // MVP：模拟订阅（正式上线接RevenueCat/Stripe）
+        isPremium = true;
+        localStorage.setItem("luna_premium", "1");
+        closePaywall();
+        // 恢复追问输入框
+        ["followupInput","followupBtn","followupInputThree","followupBtnThree"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) { el.disabled = false; el.style.opacity = ""; el.style.cursor = ""; }
+        });
+        // 更新badge
+        const badge = document.querySelector(".badge");
+        if (badge) { badge.textContent = "✦ Premium"; badge.style.color = "#f0d090"; }
+      }
+
+      function restorePurchase() {
+        alert("Restore Purchase will be available after App Store integration.");
+      }
+
+      const BASE = "https://ishtarcollective.blob.core.windows.net/rider-waite-tarot";
+      const deck = [
+        { name: "The Fool (0)", tag: "Beginnings · Freedom", meaning: "A new journey is unfolding. Stay curious and open, but don't ignore basic preparations.", img: BASE+"/major-0.jpg" },
+        { name: "The Magician (I)", tag: "Action · Resources", meaning: "You already have the tools you need. Focus your intention and take the first concrete step.", img: BASE+"/major-1.jpg" },
+        { name: "The High Priestess (II)", tag: "Intuition · Stillness", meaning: "The answer lies within, not outside. Slow down, observe, and let your intuition speak.", img: BASE+"/major-2.jpg" },
+        { name: "The Empress (III)", tag: "Nurturing · Abundance", meaning: "Invest energy into nurturing: relationships, creativity, or your well-being. Be gentle yet steady.", img: BASE+"/major-3.jpg" },
+        { name: "The Emperor (IV)", tag: "Structure · Boundaries", meaning: "Create clear plans and healthy boundaries. Stabilize the foundation before expanding.", img: BASE+"/major-4.jpg" },
+        { name: "The Hierophant (V)", tag: "Tradition · Guidance", meaning: "Seek wisdom from reliable experience. Consider consulting a mentor or following proven methods.", img: BASE+"/major-5.jpg" },
+        { name: "The Lovers (VI)", tag: "Choice · Alignment", meaning: "Alignment of values matters most. Ask yourself: what do I truly want? Commitment means trade-offs.", img: BASE+"/major-6.jpg" },
+        { name: "The Chariot (VII)", tag: "Drive · Willpower", meaning: "Once direction is set, move forward with focus. Control your pace and don't let distractions derail you.", img: BASE+"/major-7.jpg" },
+        { name: "Strength (VIII)", tag: "Gentle Power", meaning: "True strength is patient and compassionate. Guide your inner fears with calm, not suppression.", img: BASE+"/major-8.jpg" },
+        { name: "The Hermit (IX)", tag: "Solitude · Reflection", meaning: "Step back and clarify what truly matters. Less noise, more honest self-dialogue.", img: BASE+"/major-9.jpg" },
+        { name: "Wheel of Fortune (X)", tag: "Change · Timing", meaning: "Circumstances are shifting. Don't try to control everything — adapt and stay prepared.", img: BASE+"/major-10.jpg" },
+        { name: "Justice (XI)", tag: "Balance · Fairness", meaning: "Cause and effect are at work. Make decisions based on facts and principles, not emotion.", img: BASE+"/major-11.jpg" },
+        { name: "The Hanged Man (XII)", tag: "Pause · Perspective", meaning: "A temporary pause may offer a new angle. Release attachment — is there a smarter, lighter way?", img: BASE+"/major-12.jpg" },
+        { name: "Death (XIII)", tag: "Endings · Rebirth", meaning: "An old chapter is closing. Instead of resisting, actively let go to make space for what's new.", img: BASE+"/major-13.jpg" },
+        { name: "Temperance (XIV)", tag: "Balance · Restoration", meaning: "Take it slowly and find the right blend. Sustainable rhythm beats extremes every time.", img: BASE+"/major-14.jpg" },
+        { name: "The Devil (XV)", tag: "Bondage · Desire", meaning: "Something may be keeping you stuck — habit, fear, or dependency. Reclaim your power of choice.", img: BASE+"/major-15.jpg" },
+        { name: "The Tower (XVI)", tag: "Upheaval · Awakening", meaning: "An old structure is crumbling. Though uncomfortable, this is an opportunity to rebuild more authentically.", img: BASE+"/major-16.jpg" },
+        { name: "The Star (XVII)", tag: "Hope · Renewal", meaning: "You are restoring confidence and direction. Keep doing what makes you feel more genuine and alive.", img: BASE+"/major-17.jpg" },
+        { name: "The Moon (XVIII)", tag: "Illusion · Subconscious", meaning: "Information is incomplete; emotions may be amplified. Verify facts before drawing conclusions.", img: BASE+"/major-18.jpg" },
+        { name: "The Sun (XIX)", tag: "Clarity · Success", meaning: "Things are moving toward clarity and positivity. Express, share, and collaborate — then ground results in action.", img: BASE+"/major-19.jpg" },
+        { name: "Judgement (XX)", tag: "Calling · Reflection", meaning: "A moment of awakening and re-choice. Face the past honestly and make decisions closer to your true self.", img: BASE+"/major-20.jpg" },
+        { name: "The World (XXI)", tag: "Completion · Integration", meaning: "A cycle is complete. Celebrate what you've achieved, then map out the next chapter.", img: BASE+"/major-21.jpg" }
+      ];
+
+      const resetBtn = document.getElementById("resetBtn");
+      const cardName = document.getElementById("cardName");
+      const cardTag = document.getElementById("cardTag");
+      const cardMeaning = document.getElementById("cardMeaning");
+      const leftCard = document.getElementById("leftCard");
+      const promptText = document.getElementById("promptText");
+      const questionInput = document.getElementById("questionInput");
+      const aiSection = document.getElementById("aiSection");
+      const loadingEl = document.getElementById("loadingEl");
+      const aiText = document.getElementById("aiText");
+      const convoSection = document.getElementById("convoSection");
+      const convoMessages = document.getElementById("convoMessages");
+      const followupInput = document.getElementById("followupInput");
+      const followupBtn = document.getElementById("followupBtn");
+      const tarotCard = document.getElementById("tarotCard");
+      const cardFrontName = document.getElementById("cardFrontName");
+      const cardFrontTag = document.getElementById("cardFrontTag");
+
+      // Conversation state
+      let currentCard = null;
+      let originalQuestion = "";
+      let conversationHistory = [];
+      let cardState = "ready";
+      let selectedCard = null;
+
+      // Spread mode state
+      const singleSpreadBtn = document.getElementById("singleSpreadBtn");
+      const threeSpreadBtn = document.getElementById("threeSpreadBtn");
+      const singleCardGrid = document.getElementById("singleCardGrid");
+      const threeCardArea = document.getElementById("threeCardArea");
+      const threeCardContainer = document.getElementById("threeCardContainer");
+      const threeCardStatus = document.getElementById("threeCardStatus");
+      const threeCardResult = document.getElementById("threeCardResult");
+      const threeCardResultCards = document.getElementById("threeCardResultCards");
+      const loadingElThree = document.getElementById("loadingElThree");
+      const aiTextThree = document.getElementById("aiTextThree");
+      const convoSectionThree = document.getElementById("convoSectionThree");
+      const convoMessagesThree = document.getElementById("convoMessagesThree");
+      const followupInputThree = document.getElementById("followupInputThree");
+      const followupBtnThree = document.getElementById("followupBtnThree");
+      const resetBtnThree = document.getElementById("resetBtnThree");
+      const spreadCards = [
+        document.getElementById("spreadCard0"),
+        document.getElementById("spreadCard1"),
+        document.getElementById("spreadCard2")
+      ];
+      const spreadCardNames = [
+        document.getElementById("spreadCardName0"),
+        document.getElementById("spreadCardName1"),
+        document.getElementById("spreadCardName2")
+      ];
+      const spreadCardTags = [
+        document.getElementById("spreadCardTag0"),
+        document.getElementById("spreadCardTag1"),
+        document.getElementById("spreadCardTag2")
+      ];
+      const spreadCardImgs = [
+        document.getElementById("spreadCardImg0"),
+        document.getElementById("spreadCardImg1"),
+        document.getElementById("spreadCardImg2")
+      ];
+
+      let spreadMode = "single";
+      let threeSelectedCards = [null, null, null];
+      let threeFlippedCount = 0;
+      let threeCardStates = ["ready", "ready", "ready"];
+
+      function pickOne(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function animateOnce(el, cls) {
+        el.classList.remove(cls);
+        void el.offsetWidth;
+        el.classList.add(cls);
+      }
+
+      async function getAIReading(question, card) {
+        const response = await fetch("/api/tarot-reading", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question: question || undefined,
+            card: { name: card.name, tag: card.tag }
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Reading request failed");
+        }
+
+        const data = await response.json();
+        return data.reading || "The cards are silent for now. Try again.";
+      }
+
+      function addConvoBubble(text, type) {
+        const bubble = document.createElement("div");
+        bubble.className = `convo-bubble ${type}`;
+        if (type === "luna") {
+          const nameEl = document.createElement("div");
+          nameEl.className = "luna-name";
+          nameEl.textContent = "Luna";
+          bubble.appendChild(nameEl);
+          const textEl = document.createElement("span");
+          textEl.textContent = text;
+          bubble.appendChild(textEl);
+        } else {
+          bubble.textContent = text;
+        }
+        convoMessages.appendChild(bubble);
+        convoMessages.scrollTop = convoMessages.scrollHeight;
+        return bubble;
+      }
+
+      function addLoadingBubble() {
+        const bubble = document.createElement("div");
+        bubble.className = "convo-bubble luna";
+        bubble.id = "convoLoading";
+        const nameEl = document.createElement("div");
+        nameEl.className = "luna-name";
+        nameEl.textContent = "Luna";
+        bubble.appendChild(nameEl);
+        const loadEl = document.createElement("div");
+        loadEl.className = "loading";
+        loadEl.innerHTML = '<div class="spinner"></div><span>Luna is thinking…</span>';
+        bubble.appendChild(loadEl);
+        convoMessages.appendChild(bubble);
+        convoMessages.scrollTop = convoMessages.scrollHeight;
+        return bubble;
+      }
+
+      async function sendFollowUp() {
+        const text = followupInput.value.trim();
+        if (!text || !currentCard) return;
+
+        // 付费墙检查
+        if (!isPremium) {
+          showPaywall();
+          return;
+        }
+
+        followupInput.value = "";
+        followupBtn.disabled = true;
+        followupInput.disabled = true;
+
+        addConvoBubble(text, "user");
+        const loadingBubble = addLoadingBubble();
+
+        try {
+          const response = await fetch("/api/tarot-followup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              question: originalQuestion || undefined,
+              card: { name: currentCard.name, tag: currentCard.tag },
+              followUpQuestion: text,
+              conversationHistory: conversationHistory
+            })
+          });
+
+          if (!response.ok) throw new Error("Follow-up request failed");
+
+          const data = await response.json();
+          const reply = data.reply || "The cards are silent for now. Try again.";
+
+          loadingBubble.remove();
+          addConvoBubble(reply, "luna");
+
+          // Update conversation history for context
+          conversationHistory.push({ role: "user", content: text });
+          conversationHistory.push({ role: "assistant", content: reply });
+        } catch (e) {
+          loadingBubble.remove();
+          addConvoBubble("The connection to the stars faded. Please try asking again.", "luna");
+        }
+
+        followupBtn.disabled = false;
+        followupInput.disabled = false;
+        followupInput.focus();
+      }
+
+      async function render(card) {
+        const question = questionInput.value.trim();
+
+        // Store state for follow-up conversation
+        currentCard = card;
+        originalQuestion = question;
+        conversationHistory = [];
+        convoMessages.innerHTML = "";
+        convoSection.style.display = "none";
+
+        cardName.textContent = card.name;
+        cardTag.textContent = card.tag;
+        cardMeaning.textContent = card.meaning;
+        animateOnce(document.querySelector(".result"), "flip");
+
+        // Show AI section
+        aiSection.style.display = "grid";
+        loadingEl.style.display = "flex";
+        aiText.style.display = "none";
+
+        try {
+          const reading = await getAIReading(question, card);
+          aiText.textContent = reading;
+          aiText.style.display = "block";
+          loadingEl.style.display = "none";
+
+          // Save to history
+          addToHistory(card, question, reading);
+
+          // Seed conversation history with the initial reading
+          conversationHistory.push({ role: "assistant", content: reading });
+
+          // Show follow-up section
+          convoSection.style.display = "grid";
+          if (!isPremium) {
+            followupInput.placeholder = "🔒 Unlock Premium to ask Luna follow-up questions";
+            followupInput.style.opacity = "0.6";
+            followupInput.style.cursor = "pointer";
+            followupInput.onclick = () => showPaywall();
+            followupBtn.style.opacity = "0.6";
+            followupBtn.onclick = () => showPaywall();
+          } else {
+            followupInput.focus();
+          }
+        } catch (e) {
+          aiText.textContent = "Unable to connect to Luna. Please try again.";
+          aiText.style.display = "block";
+          loadingEl.style.display = "none";
+        }
+      }
+
+      function reset() {
+        cardName.textContent = "—";
+        cardTag.textContent = "No card drawn yet";
+        cardMeaning.textContent = "Tap the card to begin your reading.";
+        aiSection.style.display = "none";
+        aiText.textContent = "";
+        convoSection.style.display = "none";
+        convoMessages.innerHTML = "";
+        currentCard = null;
+        originalQuestion = "";
+        conversationHistory = [];
+        selectedCard = null;
+
+        // Reset card flip state
+        tarotCard.classList.remove("flipped", "disabled", "shuffling");
+        tarotCard.classList.add("tappable");
+        cardState = "ready";
+        promptText.textContent = "Tap the card to shuffle the deck";
+        resetBtn.style.display = "none";
+        animateOnce(leftCard, "shake");
+      }
+
+      function handleCardTap() {
+        if (cardState === "ready") {
+          startShuffle();
+        }
+      }
+
+      function startShuffle() {
+        cardState = "shuffling";
+        selectedCard = pickOne(deck);
+
+        // Pre-load front face content
+        cardFrontName.textContent = selectedCard.name;
+        cardFrontTag.textContent = selectedCard.tag;
+        const cardFrontImg = document.getElementById("cardFrontImg");
+        if (cardFrontImg && selectedCard.img) {
+          cardFrontImg.src = selectedCard.img;
+          cardFrontImg.alt = selectedCard.name;
+        }
+
+        tarotCard.classList.remove("tappable");
+        tarotCard.classList.add("shuffling", "disabled");
+        promptText.textContent = "Shuffling and drawing your card…";
+
+        setTimeout(() => {
+          tarotCard.classList.remove("shuffling");
+          flipAndReveal();
+        }, 1400);
+      }
+
+      function flipAndReveal() {
+        cardState = "revealed";
+        tarotCard.classList.remove("tappable");
+        tarotCard.classList.add("flipped", "disabled");
+        promptText.textContent = "Your card has appeared";
+        resetBtn.style.display = "";
+
+        setTimeout(() => render(selectedCard), 450);
+      }
+
+      tarotCard.addEventListener("click", handleCardTap);
+      resetBtn.addEventListener("click", reset);
+
+      followupBtn.addEventListener("click", sendFollowUp);
+      followupInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendFollowUp();
+        }
+      });
+
+      // === Spread chooser ===
+      function switchSpread(mode) {
+        if (spreadMode === mode) return;
+        spreadMode = mode;
+
+        singleSpreadBtn.classList.toggle("active", mode === "single");
+        threeSpreadBtn.classList.toggle("active", mode === "three");
+
+        if (mode === "single") {
+          singleCardGrid.style.display = "";
+          threeCardArea.classList.remove("visible");
+          reset();
+        } else {
+          singleCardGrid.style.display = "none";
+          threeCardArea.classList.add("visible");
+          resetThreeCards();
+        }
+      }
+
+      singleSpreadBtn.addEventListener("click", () => switchSpread("single"));
+      threeSpreadBtn.addEventListener("click", () => switchSpread("three"));
+
+      // === Three card spread logic ===
+      function pickUniqueCards(count) {
+        const shuffled = [...deck].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, count);
+      }
+
+      function resetThreeCards() {
+        threeSelectedCards = pickUniqueCards(3);
+        threeFlippedCount = 0;
+        threeCardStates = ["ready", "ready", "ready"];
+        currentCard = null;
+        originalQuestion = "";
+        conversationHistory = [];
+
+        for (let i = 0; i < 3; i++) {
+          spreadCardNames[i].textContent = threeSelectedCards[i].name;
+          spreadCardTags[i].textContent = threeSelectedCards[i].tag;
+          if (spreadCardImgs[i] && threeSelectedCards[i].img) {
+            spreadCardImgs[i].src = threeSelectedCards[i].img;
+            spreadCardImgs[i].alt = threeSelectedCards[i].name;
+          }
+          spreadCards[i].classList.remove("flipped", "disabled", "shuffling");
+          spreadCards[i].classList.add("tappable");
+        }
+
+        threeCardStatus.textContent = "Tap each card to reveal your reading";
+        threeCardResult.style.display = "none";
+        threeCardResultCards.innerHTML = "";
+        aiTextThree.textContent = "";
+        aiTextThree.style.display = "none";
+        convoSectionThree.style.display = "none";
+        convoMessagesThree.innerHTML = "";
+        resetBtnThree.style.display = "none";
+      }
+
+      function handleSpreadCardTap(index) {
+        if (threeCardStates[index] !== "ready") return;
+        threeCardStates[index] = "shuffling";
+
+        const card = spreadCards[index];
+        card.classList.remove("tappable");
+        card.classList.add("shuffling", "disabled");
+
+        setTimeout(() => {
+          card.classList.remove("shuffling");
+          card.classList.add("flipped", "disabled");
+          threeCardStates[index] = "revealed";
+          threeFlippedCount++;
+
+          const remaining = 3 - threeFlippedCount;
+          if (remaining > 0) {
+            threeCardStatus.textContent = remaining + " card" + (remaining > 1 ? "s" : "") + " remaining\u2009—\u2009tap to reveal";
+          } else {
+            threeCardStatus.textContent = "All cards revealed";
+            resetBtnThree.style.display = "";
+            renderThreeCardReading();
+          }
+        }, 1400);
+      }
+
+      spreadCards.forEach((card, i) => {
+        card.addEventListener("click", () => handleSpreadCardTap(i));
+      });
+
+      resetBtnThree.addEventListener("click", () => {
+        resetThreeCards();
+        animateOnce(threeCardContainer, "shake");
+      });
+
+      // === Three card reading ===
+      async function getThreeCardReading(question, cards) {
+        const response = await fetch("/api/tarot-reading", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question: question || undefined,
+            cards: cards.map((c, i) => ({
+              name: c.name,
+              tag: c.tag,
+              position: ["past", "present", "future"][i]
+            })),
+            spreadType: "three-card"
+          })
+        });
+
+        if (!response.ok) throw new Error("Reading request failed");
+        const data = await response.json();
+        return data.reading || "The cards are silent for now. Try again.";
+      }
+
+      async function renderThreeCardReading() {
+        const question = questionInput.value.trim();
+        originalQuestion = question;
+        conversationHistory = [];
+
+        const positions = ["Past", "Present", "Future"];
+        threeCardResultCards.innerHTML = "";
+        for (let i = 0; i < 3; i++) {
+          const item = document.createElement("div");
+          item.className = "three-card-result-item";
+          const posSpan = document.createElement("span");
+          posSpan.className = "position-tag";
+          posSpan.textContent = positions[i];
+          const nameP = document.createElement("p");
+          nameP.className = "name";
+          nameP.textContent = threeSelectedCards[i].name;
+          const tagSpan = document.createElement("span");
+          tagSpan.className = "tag";
+          tagSpan.textContent = threeSelectedCards[i].tag;
+          item.appendChild(posSpan);
+          item.appendChild(nameP);
+          item.appendChild(tagSpan);
+          threeCardResultCards.appendChild(item);
+        }
+
+        threeCardResult.style.display = "grid";
+        loadingElThree.style.display = "flex";
+        aiTextThree.style.display = "none";
+        animateOnce(threeCardResult, "flip");
+
+        try {
+          const reading = await getThreeCardReading(question, threeSelectedCards);
+          aiTextThree.textContent = reading;
+          aiTextThree.style.display = "block";
+          loadingElThree.style.display = "none";
+
+          conversationHistory.push({ role: "assistant", content: reading });
+          convoSectionThree.style.display = "grid";
+          if (!isPremium) {
+            followupInputThree.placeholder = "🔒 Unlock Premium to ask Luna follow-up questions";
+            followupInputThree.style.opacity = "0.6";
+            followupInputThree.style.cursor = "pointer";
+            followupInputThree.onclick = () => showPaywall();
+            followupBtnThree.style.opacity = "0.6";
+            followupBtnThree.onclick = () => showPaywall();
+          } else {
+            followupInputThree.focus();
+          }
+        } catch (e) {
+          aiTextThree.textContent = "Unable to connect to Luna. Please try again.";
+          aiTextThree.style.display = "block";
+          loadingElThree.style.display = "none";
+        }
+      }
+
+      // === Three card follow-up ===
+      function addConvoBubbleThree(text, type) {
+        const bubble = document.createElement("div");
+        bubble.className = "convo-bubble " + type;
+        if (type === "luna") {
+          const nameEl = document.createElement("div");
+          nameEl.className = "luna-name";
+          nameEl.textContent = "Luna";
+          bubble.appendChild(nameEl);
+          const textEl = document.createElement("span");
+          textEl.textContent = text;
+          bubble.appendChild(textEl);
+        } else {
+          bubble.textContent = text;
+        }
+        convoMessagesThree.appendChild(bubble);
+        convoMessagesThree.scrollTop = convoMessagesThree.scrollHeight;
+        return bubble;
+      }
+
+      function addLoadingBubbleThree() {
+        const bubble = document.createElement("div");
+        bubble.className = "convo-bubble luna";
+        const nameEl = document.createElement("div");
+        nameEl.className = "luna-name";
+        nameEl.textContent = "Luna";
+        bubble.appendChild(nameEl);
+        const loadEl = document.createElement("div");
+        loadEl.className = "loading";
+        loadEl.innerHTML = '<div class="spinner"></div><span>Luna is thinking\u2026</span>';
+        bubble.appendChild(loadEl);
+        convoMessagesThree.appendChild(bubble);
+        convoMessagesThree.scrollTop = convoMessagesThree.scrollHeight;
+        return bubble;
+      }
+
+      async function sendThreeCardFollowUp() {
+        const text = followupInputThree.value.trim();
+        if (!text || !threeSelectedCards[0]) return;
+
+        // 付费墙检查
+        if (!isPremium) {
+          showPaywall();
+          return;
+        }
+
+        followupInputThree.value = "";
+        followupBtnThree.disabled = true;
+        followupInputThree.disabled = true;
+
+        addConvoBubbleThree(text, "user");
+        const loadingBubble = addLoadingBubbleThree();
+
+        try {
+          const response = await fetch("/api/tarot-followup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              question: originalQuestion || undefined,
+              cards: threeSelectedCards.map((c, i) => ({
+                name: c.name,
+                tag: c.tag,
+                position: ["past", "present", "future"][i]
+              })),
+              spreadType: "three-card",
+              followUpQuestion: text,
+              conversationHistory: conversationHistory
+            })
+          });
+
+          if (!response.ok) throw new Error("Follow-up request failed");
+          const data = await response.json();
+          const reply = data.reply || "The cards are silent for now. Try again.";
+
+          loadingBubble.remove();
+          addConvoBubbleThree(reply, "luna");
+
+          conversationHistory.push({ role: "user", content: text });
+          conversationHistory.push({ role: "assistant", content: reply });
+        } catch (e) {
+          loadingBubble.remove();
+          addConvoBubbleThree("The connection to the stars faded. Please try asking again.", "luna");
+        }
+
+        followupBtnThree.disabled = false;
+        followupInputThree.disabled = false;
+        followupInputThree.focus();
+      }
+
+      followupBtnThree.addEventListener("click", sendThreeCardFollowUp);
+      followupInputThree.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendThreeCardFollowUp();
+        }
+      });
+
+      requestAnimationFrame(() => animateOnce(leftCard, "flip"));
+
+      // ── Onboarding ──────────────────────────────────────
+      const onboardingOverlay = document.getElementById("onboardingOverlay");
+      const obUserData = { reason: "", focus: "", zodiac: "", name: "" };
+
+      function checkOnboarding() {
+        if (localStorage.getItem("luna_onboarded")) {
+          onboardingOverlay.style.display = "none";
+          const z = localStorage.getItem("luna_zodiac");
+          const n = localStorage.getItem("luna_name");
+          if (z) {
+            const zSel = document.getElementById("zodiacSelect");
+            if (zSel) zSel.value = z;
+            loadDailyCard(z);
+          }
+          if (n) updateGreeting(n);
+        }
+      }
+
+      function updateGreeting(name) {
+        if (name) {
+          document.querySelector("h1").textContent = "✦ Luna";
+          document.querySelector(".sub").textContent = `Welcome back, ${name}. The cards are ready for you.`;
+        }
+      }
+
+      function goToStep(from, to) {
+        document.getElementById("obStep" + from).classList.remove("active");
+        document.getElementById("obStep" + to).classList.add("active");
+        ["obDot0","obDot1","obDot2","obDot3"].forEach((id, i) => {
+          const dot = document.getElementById(id);
+          dot.classList.toggle("done", i < to);
+          dot.classList.toggle("active", i === to);
+        });
+      }
+
+      // Step 0 options
+      document.querySelectorAll("#obStep0 .ob-option").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("#obStep0 .ob-option").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          obUserData.reason = btn.dataset.value;
+          document.getElementById("obNext0").disabled = false;
+        });
+      });
+
+      document.getElementById("obNext0").addEventListener("click", () => goToStep(0, 1));
+
+      // Step 1 options
+      document.querySelectorAll("#obStep1 .ob-option").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("#obStep1 .ob-option").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          obUserData.focus = btn.dataset.value;
+          document.getElementById("obNext1").disabled = false;
+        });
+      });
+
+      document.getElementById("obNext1").addEventListener("click", () => goToStep(1, 2));
+
+      // Step 2 zodiac
+      document.querySelectorAll(".ob-zodiac-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".ob-zodiac-btn").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          obUserData.zodiac = btn.dataset.value;
+          document.getElementById("obNext2").disabled = false;
+        });
+      });
+
+      document.getElementById("obNext2").addEventListener("click", () => goToStep(2, 3));
+      document.getElementById("obSkip2").addEventListener("click", () => goToStep(2, 3));
+
+      // Step 3 finish
+      document.getElementById("obNext3").addEventListener("click", () => {
+        obUserData.name = document.getElementById("obNameInput").value.trim();
+        localStorage.setItem("luna_onboarded", "1");
+        if (obUserData.zodiac) {
+          localStorage.setItem("luna_zodiac", obUserData.zodiac);
+          zodiacSelect.value = obUserData.zodiac;
+          loadDailyCard(obUserData.zodiac);
+        }
+        if (obUserData.name) {
+          localStorage.setItem("luna_name", obUserData.name);
+          updateGreeting(obUserData.name);
+        }
+        onboardingOverlay.classList.add("hidden");
+        setTimeout(() => onboardingOverlay.style.display = "none", 400);
+      });
+
+      // ── History ──────────────────────────────────────────
+      const historyToggle = document.getElementById("historyToggle");
+      const historyPanel = document.getElementById("historyPanel");
+      const historyList = document.getElementById("historyList");
+      const historyClear = document.getElementById("historyClear");
+
+      function getHistory() {
+        try { return JSON.parse(localStorage.getItem("luna_history") || "[]"); } catch { return []; }
+      }
+
+      function saveHistory(items) {
+        localStorage.setItem("luna_history", JSON.stringify(items.slice(0, 30)));
+      }
+
+      function addToHistory(card, question, reading) {
+        const items = getHistory();
+        items.unshift({
+          card: card.name,
+          tag: card.tag,
+          question: question || "",
+          reading: reading || "",
+          date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+        });
+        saveHistory(items);
+        renderHistory();
+      }
+
+      function renderHistory() {
+        const items = getHistory();
+        if (!items.length) {
+          historyList.innerHTML = '<p class="history-empty">No readings yet. Draw your first card!</p>';
+          return;
+        }
+        historyList.innerHTML = items.map(item => `
+          <div class="history-item">
+            <div class="history-item-top">
+              <span class="history-item-card">${item.card}</span>
+              <span class="history-item-date">${item.date}</span>
+            </div>
+            ${item.question ? `<div class="history-item-question">Q: ${item.question}</div>` : ""}
+            ${item.reading ? `<div class="history-item-reading">${item.reading}</div>` : ""}
+          </div>
+        `).join("");
+      }
+
+      historyToggle.addEventListener("click", () => {
+        const isOpen = historyPanel.style.display !== "none";
+        historyPanel.style.display = isOpen ? "none" : "grid";
+        historyToggle.textContent = isOpen ? "🕐 Reading History" : "🕐 Hide History";
+        if (!isOpen) renderHistory();
+      });
+
+      historyClear.addEventListener("click", () => {
+        localStorage.removeItem("luna_history");
+        renderHistory();
+      });
+
+      // ── Daily Card & Zodiac ──────────────────────────────
+      const zodiacSelect = document.getElementById("zodiacSelect");
+      const dailyCardBox = document.getElementById("dailyCardBox");
+      const dailyCardName = document.getElementById("dailyCardName");
+      const dailyCardTag = document.getElementById("dailyCardTag");
+      const dailyCardMessage = document.getElementById("dailyCardMessage");
+      const dailyZodiacNote = document.getElementById("dailyZodiacNote");
+      const dailyDate = document.getElementById("dailyDate");
+
+      function getTodayKey() {
+        const d = new Date();
+        return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+      }
+
+      function getDailyCard() {
+        // Same card all day — seed by date
+        const today = getTodayKey();
+        let hash = 0;
+        for (let i = 0; i < today.length; i++) hash = (hash * 31 + today.charCodeAt(i)) & 0xffffffff;
+        return deck[Math.abs(hash) % deck.length];
+      }
+
+      async function loadDailyCard(zodiac) {
+        const card = getDailyCard();
+        const today = new Date();
+        dailyDate.textContent = today.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+        dailyCardName.textContent = card.name;
+        dailyCardTag.textContent = card.tag;
+        dailyCardMessage.textContent = "Luna is reading today's energy...";
+        dailyZodiacNote.textContent = "";
+        dailyCardBox.style.display = "grid";
+
+        try {
+          const response = await fetch("/api/tarot-reading", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              question: `Daily horoscope for ${zodiac}`,
+              card: { name: card.name, tag: card.tag },
+              isDailyCard: true,
+              zodiac: zodiac
+            })
+          });
+          const data = await response.json();
+          dailyCardMessage.textContent = data.reading || card.meaning;
+          if (zodiac) dailyZodiacNote.textContent = `✦ Personalized for ${zodiac}`;
+        } catch(e) {
+          dailyCardMessage.textContent = card.meaning;
+        }
+      }
+
+      zodiacSelect.addEventListener("change", () => {
+        const zodiac = zodiacSelect.value;
+        if (zodiac) {
+          localStorage.setItem("luna_zodiac", zodiac);
+          loadDailyCard(zodiac);
+        }
+      });
+
+      // Auto-load if zodiac was saved before
+      const savedZodiac = localStorage.getItem("luna_zodiac");
+      if (savedZodiac) {
+        zodiacSelect.value = savedZodiac;
+        loadDailyCard(savedZodiac);
+      }
+
+      checkOnboarding();
+    </script>
+  </body>
+</html>

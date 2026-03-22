@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/tarot-reading", "destination": "/api/tarot-reading" },
+    { "source": "/api/tarot-followup", "destination": "/api/tarot-followup" }
+  ]
+}
