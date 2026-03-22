@@ -1,0 +1,15 @@
+[build]
+  functions = "netlify/functions"
+
+[build.environment]
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+
+[[redirects]]
+  from = "/api/tarot-reading"
+  to = "/.netlify/functions/tarot-reading"
+  status = 200
+
+[[redirects]]
+  from = "/api/tarot-followup"
+  to = "/.netlify/functions/tarot-followup"
+  status = 200
