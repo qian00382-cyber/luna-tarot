@@ -1,10 +1,10 @@
 const https = require("https");
 
-function callQwen(messages) {
+function callKimi(messages) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({
       model: "moonshot-v1-8k",
-      messages: messages,
+      messages,
       max_tokens: 300
     });
 
@@ -30,34 +30,28 @@ function callQwen(messages) {
           } else {
             reject(new Error("Unexpected response: " + data));
           }
-        } catch (e) {
-          reject(e);
-        }
+        } catch (e) { reject(e); }
       });
     });
-
     req.on("error", reject);
     req.write(body);
     req.end();
   });
 }
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
+module.exports = async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
 
   try {
-    const body = JSON.parse(event.body);
-    const { question, card, cards, spreadType, followUpQuestion, conversationHistory = [] } = body;
+    const { followUpQuestion, conversationHistory = [], question, card, cards, spreadType } = req.body;
 
-    if (!followUpQuestion) {
-      return { statusCode: 400, body: JSON.stringify({ error: "No follow-up question provided" }) };
-    }
+    if (!followUpQuestion) return res.status(400).json({ error: "No follow-up question provided" });
 
-    const systemPrompt = `You are Luna, a warm tarot reader continuing a conversation about a reading.
-Be concise (2-3 sentences), warm, and insightful. Stay grounded in the card(s) drawn.
-Never repeat the initial reading verbatim — build on it.`;
+    const systemPrompt = `You are Luna, a warm tarot reader continuing a conversation about a reading. Be concise (2-3 sentences), warm, and insightful. Stay grounded in the card(s) drawn. Never repeat the initial reading verbatim — build on it.`;
 
     let contextContent = "";
     if (spreadType === "three-card" && cards) {
@@ -73,22 +67,11 @@ Never repeat the initial reading verbatim — build on it.`;
       { role: "user", content: followUpQuestion }
     ];
 
-    const reply = await callQwen(messages);
-
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-      body: JSON.stringify({ reply })
-    };
+    const reply = await callKimi(messages);
+    res.status(200).json({ reply });
 
   } catch (err) {
     console.error("tarot-followup error:", err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Luna is unavailable. Please try again." })
-    };
+    res.status(500).json({ error: "Luna is unavailable. Please try again." });
   }
 };
