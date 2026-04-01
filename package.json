@@ -1,0 +1,14 @@
+{
+  "name": "luna-tarot-uniapp",
+  "version": "1.0.0",
+  "description": "Luna AI Tarot - UniApp Project",
+  "scripts": {
+    "dev:mp-weixin": "uni",
+    "build:mp-weixin": "uni build",
+    "dev:app": "uni -p app",
+    "build:app": "uni build -p app"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "*"
+  }
+}

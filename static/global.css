@@ -1,0 +1,88 @@
+/* App.vue全局样式 */
+
+page {
+  background-color: #06040f;
+  color: rgba(255, 248, 235, 0.95);
+  font-family: 'Georgia', serif;
+  min-height: 100vh;
+}
+
+/* 颜色变量（通过class实现） */
+.color-gold { color: #d4af69; }
+.color-gold2 { color: #f0d090; }
+.color-muted { color: rgba(255, 248, 235, 0.65); }
+.color-muted2 { color: rgba(255, 248, 235, 0.4); }
+.color-purple { color: #7c5cbf; }
+.color-rose { color: #c8607a; }
+.color-teal { color: #4ab8c4; }
+
+/* 通用面板 */
+.panel {
+  background: linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(212,175,105,0.25);
+  border-radius: 22rpx;
+  overflow: hidden;
+}
+
+/* 金色分割线 */
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,105,0.4), transparent);
+  margin: 32rpx 0;
+}
+
+/* 通用按钮 */
+.btn-gold {
+  background: linear-gradient(135deg, #d4af69, #c8a050);
+  color: #06040f;
+  font-weight: 700;
+  border-radius: 50rpx;
+  border: none;
+  padding: 28rpx 0;
+  font-size: 30rpx;
+  letter-spacing: 2rpx;
+  text-align: center;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: rgba(255, 248, 235, 0.65);
+  border: 1px solid rgba(212,175,105,0.25);
+  border-radius: 50rpx;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+/* 星空背景 */
+.starfield {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 内容层叠在星空上 */
+.content-layer {
+  position: relative;
+  z-index: 1;
+}
+
+/* 卡片容器 */
+.card-wrap {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212,175,105,0.2);
+  border-radius: 16rpx;
+  padding: 32rpx;
+}
+
+/* 文字样式 */
+.title-serif {
+  font-family: 'Georgia', serif;
+  letter-spacing: 4rpx;
+  text-transform: uppercase;
+}
+
+.text-glow {
+  text-shadow: 0 0 20rpx rgba(212,175,105,0.4);
+}
