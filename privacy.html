@@ -1,148 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy — Luna Tarot</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Policy — Luna AI Tarot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Text:wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Georgia, serif;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
       background: #06040f;
       color: rgba(255,248,235,0.9);
+      font-family: 'Crimson Text', Georgia, serif;
       min-height: 100vh;
-      padding: 48px 24px;
+      line-height: 1.8;
     }
-    .container {
-      max-width: 720px;
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 600px 400px at 80% 10%, rgba(124,92,191,0.15) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    nav {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 40px;
+      border-bottom: 1px solid rgba(212,175,105,0.1);
+    }
+    .nav-logo {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      color: #d4af69;
+      text-decoration: none;
+      letter-spacing: 4px;
+    }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 14px; color: rgba(255,248,235,0.45); text-decoration: none; }
+    .nav-links a:hover { color: #d4af69; }
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
       margin: 0 auto;
+      padding: 60px 32px 100px;
     }
-    .logo {
-      font-family: Georgia, serif;
-      font-size: 28px;
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 36px;
       color: #d4af69;
       letter-spacing: 3px;
       margin-bottom: 8px;
     }
-    .tagline {
-      font-size: 14px;
-      color: rgba(255,248,235,0.5);
-      font-style: italic;
+    .doc-date {
+      font-size: 15px;
+      color: rgba(255,248,235,0.35);
       margin-bottom: 48px;
-    }
-    h1 {
-      font-size: 24px;
-      color: #f0d090;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-    }
-    .updated {
-      font-size: 13px;
-      color: rgba(255,248,235,0.4);
-      font-style: italic;
-      margin-bottom: 40px;
+      display: block;
     }
     h2 {
-      font-size: 16px;
-      color: #d4af69;
-      letter-spacing: 0.5px;
-      margin: 32px 0 12px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid rgba(212,175,105,0.2);
+      font-family: 'Cinzel', serif;
+      font-size: 17px;
+      color: rgba(212,175,105,0.85);
+      letter-spacing: 1px;
+      margin: 40px 0 14px;
     }
-    p {
-      font-size: 15px;
-      line-height: 1.8;
-      color: rgba(255,248,235,0.75);
-      margin-bottom: 12px;
-    }
-    ul {
-      margin: 8px 0 12px 20px;
-    }
-    li {
-      font-size: 15px;
-      line-height: 1.8;
-      color: rgba(255,248,235,0.75);
-      margin-bottom: 4px;
-    }
-    a {
-      color: #d4af69;
-      text-decoration: none;
-    }
-    a:hover { text-decoration: underline; }
-    .divider {
-      height: 1px;
-      background: rgba(212,175,105,0.15);
-      margin: 48px 0 32px;
-    }
-    .footer {
-      font-size: 13px;
-      color: rgba(255,248,235,0.3);
-      text-align: center;
-      font-style: italic;
-      margin-top: 48px;
-    }
+    p { font-size: 17px; color: rgba(255,248,235,0.7); margin-bottom: 16px; }
+    a { color: #d4af69; }
+    .gold-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(212,175,105,0.3), transparent); margin: 48px 0; }
+    footer { text-align: center; padding: 40px; border-top: 1px solid rgba(212,175,105,0.1); position: relative; z-index: 1; }
+    footer a { font-size: 14px; color: rgba(255,248,235,0.35); text-decoration: none; margin: 0 16px; }
+    footer a:hover { color: #d4af69; }
+    .footer-copy { font-size: 13px; color: rgba(255,248,235,0.2); margin-top: 16px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo">✦ Luna</div>
-    <div class="tagline">Ancient wisdom meets modern intuition</div>
 
+  <nav>
+    <a href="/" class="nav-logo">✦ Luna</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
     <h1>Privacy Policy</h1>
-    <div class="updated">Last updated: March 31, 2026</div>
+    <span class="doc-date">Last updated: March 31, 2026</span>
 
-    <p>Luna ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our Luna Tarot application ("App").</p>
+    <p>Luna ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use the Luna AI Tarot Card Reading application ("App").</p>
 
     <h2>1. Information We Collect</h2>
-    <p>We collect minimal information to provide you with a personalized experience:</p>
-    <ul>
-      <li><strong>Name</strong> (optional) — entered during onboarding to personalize your readings</li>
-      <li><strong>Zodiac sign</strong> (optional) — used to personalize your daily card readings</li>
-      <li><strong>Reading history</strong> — stored locally on your device only</li>
-      <li><strong>Usage data</strong> — anonymous analytics to improve app performance</li>
-    </ul>
+    <p>Luna collects minimal information to provide you with personalized tarot readings. This includes:</p>
+    <p><strong>Information you provide voluntarily:</strong> Your name (optional), zodiac sign (optional), and the questions or intentions you share during a reading session.</p>
+    <p><strong>Usage data:</strong> We do not collect analytics, crash reports, or behavioral tracking data through our own systems.</p>
 
     <h2>2. How We Use Your Information</h2>
-    <ul>
-      <li>To personalize your tarot readings based on your zodiac sign</li>
-      <li>To display your reading history within the app</li>
-      <li>To improve the app's performance and user experience</li>
-    </ul>
-    <p>We do not sell, trade, or rent your personal information to third parties.</p>
+    <p>Your information is used solely to generate personalized AI tarot readings. Questions you submit are sent to our AI provider (Moonshot AI / Kimi) to generate responses. We do not sell, rent, or share your personal information with third parties for marketing purposes.</p>
 
     <h2>3. Data Storage</h2>
-    <p>All reading history and personal preferences (name, zodiac sign) are stored locally on your device using browser/app local storage. We do not store your personal readings on our servers.</p>
+    <p>Reading history, your name, and zodiac preferences are stored <strong>locally on your device only</strong>. We do not maintain a server-side database of your personal readings or account information.</p>
 
-    <h2>4. Third-Party AI Services</h2>
-    <p>Luna uses AI services to generate tarot readings. When you request a reading, the card drawn and your question (if provided) are sent to our AI provider to generate a response. No personally identifying information is included in these requests.</p>
+    <h2>4. AI Processing</h2>
+    <p>Questions and card information are transmitted to our AI API (api.moonshot.cn) to generate readings. Please do not include sensitive personal information such as financial details, passwords, or government identification numbers in your questions.</p>
 
-    <h2>5. Children's Privacy</h2>
-    <p>Luna is rated 17+ and is not intended for users under the age of 17. We do not knowingly collect personal information from children under 17. If you believe a child has provided us with personal information, please contact us immediately.</p>
+    <h2>5. In-App Purchases</h2>
+    <p>Subscription purchases are processed entirely through Apple's App Store and Apple's payment infrastructure. We do not collect, store, or have access to your payment information. All billing is handled by Apple in accordance with their privacy practices and terms of service.</p>
 
-    <h2>6. Data Security</h2>
-    <p>We implement appropriate technical measures to protect your information. However, no method of transmission over the internet or electronic storage is 100% secure. We strive to use commercially acceptable means to protect your information but cannot guarantee absolute security.</p>
+    <h2>6. Third-Party Services</h2>
+    <p>Luna uses the following third-party services:</p>
+    <p><strong>Moonshot AI (api.moonshot.cn):</strong> For generating AI tarot readings. Your question and selected card information is sent to this service.</p>
+    <p><strong>Apple App Store:</strong> For app distribution and in-app purchase processing.</p>
+    <p><strong>Cloudflare:</strong> For content delivery and website hosting.</p>
 
-    <h2>7. Your Rights</h2>
-    <p>You have the right to:</p>
-    <ul>
-      <li>Clear your reading history at any time within the app</li>
-      <li>Delete your local data by uninstalling the app</li>
-      <li>Request information about any data we hold about you</li>
-    </ul>
+    <h2>7. Children's Privacy</h2>
+    <p>Luna is rated 17+ and is not intended for use by children under the age of 17. We do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us and we will take steps to remove such information.</p>
 
-    <h2>8. Changes to This Policy</h2>
-    <p>We may update this Privacy Policy from time to time. We will notify you of any changes by updating the "Last updated" date at the top of this page. Continued use of the app after changes constitutes your acceptance of the updated policy.</p>
+    <h2>8. Data Security</h2>
+    <p>We implement appropriate technical measures to protect the information transmitted through our App. However, no method of transmission over the internet or electronic storage is 100% secure.</p>
 
-    <h2>9. Contact Us</h2>
-    <p>If you have any questions about this Privacy Policy, please contact us:</p>
-    <p>📧 <a href="mailto:support@taotalisman.com">support@taotalisman.com</a></p>
-    <p>🌐 <a href="https://www.taotalisman.com">www.taotalisman.com</a></p>
+    <h2>9. Your Rights</h2>
+    <p>Since reading history and preferences are stored locally on your device, you can delete this data at any time by clearing the app's data or uninstalling the App. For any questions about data we may hold, please contact us.</p>
 
-    <div class="divider"></div>
-    <p style="font-size:13px; color:rgba(255,248,235,0.4); font-style:italic;">Luna is designed for entertainment and self-reflection purposes only. Readings do not constitute professional advice of any kind.</p>
+    <h2>10. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. We will notify you of any changes by updating the "Last updated" date at the top of this policy. Continued use of the App after changes constitutes your acceptance of the updated policy.</p>
 
-    <div class="footer">✦ Luna Tarot · taotalisman.com</div>
+    <h2>11. Contact Us</h2>
+    <p>If you have any questions or concerns about this Privacy Policy, please contact us at:</p>
+    <p><a href="mailto:privacy@taotalisman.com">privacy@taotalisman.com</a></p>
+
+    <div class="gold-line"></div>
+    <p style="font-size:15px; color: rgba(255,248,235,0.35); text-align:center;">Luna — AI Tarot Card Reading<br>taotalisman.com</p>
   </div>
+
+  <footer>
+    <div>
+      <a href="/">Home</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Use</a>
+      <a href="mailto:support@taotalisman.com">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 Luna. All rights reserved.</div>
+  </footer>
+
 </body>
 </html>
