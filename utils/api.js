@@ -92,9 +92,26 @@ export function getDailyCard() {
   return deck[Math.abs(hash) % deck.length];
 }
 
+// 通用请求封装
+function request(options) {
+  return new Promise((resolve, reject) => {
+    uni.request({
+      ...options,
+      success: (res) => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(res.data);
+        } else {
+          reject(new Error(`HTTP ${res.statusCode}`));
+        }
+      },
+      fail: (err) => reject(new Error(err.errMsg || 'Network error'))
+    });
+  });
+}
+
 // 塔罗解读API
 export async function getTarotReading(question, card, options = {}) {
-  const response = await uni.request({
+  return request({
     url: `${API_BASE}/api/tarot-reading`,
     method: 'POST',
     header: { 'Content-Type': 'application/json' },
@@ -104,20 +121,16 @@ export async function getTarotReading(question, card, options = {}) {
       ...options
     }
   });
-  if (response[0]) throw new Error('Network error');
-  return response[1].data;
 }
 
 // 追问API
 export async function getFollowUp(messages) {
-  const response = await uni.request({
+  return request({
     url: `${API_BASE}/api/tarot-followup`,
     method: 'POST',
     header: { 'Content-Type': 'application/json' },
     data: { messages }
   });
-  if (response[0]) throw new Error('Network error');
-  return response[1].data;
 }
 
 // 本地存储工具
